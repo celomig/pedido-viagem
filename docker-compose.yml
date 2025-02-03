@@ -1,0 +1,110 @@
+services:
+  # Serviço Backend (Laravel)
+  travel_app:
+    image: laravelsail/php84-composer:latest
+    container_name: travel_laravel
+    ports:
+      - 8000:8000
+    environment:
+      WWWGROUP: '${WWWGROUP}'
+      WWWUSER: '${WWWUSER}'
+      LARAVEL_SAIL: 1
+    volumes:
+      - ./backend:/var/www/html
+    networks:
+      - travel_network
+    depends_on:
+      - travel_bd
+    command: >
+      bash -c "apt-get update && apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev libmariadb-dev-compat &&
+      docker-php-ext-configure gd --with-freetype --with-jpeg &&
+      docker-php-ext-install gd pdo_mysql &&
+      php artisan migrate && php artisan serve --host=0.0.0.0 --port=8000"
+    working_dir: /var/www/html
+    stdin_open: true
+    tty: true
+
+  # Banco de dados MySQL para o Backend
+  travel_bd:
+    image: mysql:8.0
+    container_name: travel_bd
+    ports:
+      - 3311:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: sail
+      MYSQL_PASSWORD: password
+    networks:
+      - travel_network
+    volumes:
+      - travel_bd_data:/var/lib/mysql
+    restart: always
+
+  # Banco de dados MySQL para logs de atividades
+  travel_logs_bd:
+    image: mysql:8.0
+    container_name: travel_logs_bd
+    ports:
+      - 3310:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: logs_activity
+      MYSQL_USER: sail
+      MYSQL_PASSWORD: password
+    networks:
+      - travel_network
+    volumes:
+      - travel_logs_bd_data:/var/lib/mysql
+    restart: always
+
+  # Serviço da Fila (Laravel Queue)
+  travel_queue:
+    image: laravelsail/php84-composer:latest
+    container_name: travel_queue
+    environment:
+      WWWGROUP: '${WWWGROUP}'
+      WWWUSER: '${WWWUSER}'
+      LARAVEL_SAIL: 1
+    volumes:
+      - ./backend:/var/www/html
+    networks:
+      - travel_network
+    depends_on:
+      - travel_bd
+      - travel_logs_bd
+    command: >
+      bash -c "apt-get update && apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev libmariadb-dev-compat &&
+      docker-php-ext-configure gd --with-freetype --with-jpeg &&
+      docker-php-ext-install gd pdo_mysql &&
+      php artisan queue:work --daemon"
+    working_dir: /var/www/html
+    stdin_open: true
+    tty: true
+
+  # Serviço Frontend (Vue.js)
+  travel_vue:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: travel_vue
+    ports:
+      - 8080:8080  # Exponha a porta 8080 do contêiner, onde o Vue CLI serve a aplicação
+    networks:
+      - travel_network
+    volumes:
+      - ./frontend:/app  # Sincroniza os arquivos do frontend entre o host e o contêiner
+    stdin_open: true
+    tty: true
+    command: npm run serve  # Executa o Vue no modo de desenvolvimento
+
+
+networks:
+  travel_network:
+    driver: bridge
+
+volumes:
+  travel_bd_data:
+    driver: local
+  travel_logs_bd_data:
+    driver: local

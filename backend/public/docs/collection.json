@@ -1,0 +1,520 @@
+{
+    "variable": [
+        {
+            "id": "baseUrl",
+            "key": "baseUrl",
+            "type": "string",
+            "name": "string",
+            "value": "http:\/\/localhost"
+        }
+    ],
+    "info": {
+        "name": "PedidoViagem",
+        "_postman_id": "c74596f8-2266-473d-ad55-37b4e096d5a9",
+        "description": "",
+        "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json"
+    },
+    "item": [
+        {
+            "name": "Travel Orders",
+            "description": "",
+            "item": [
+                {
+                    "name": "List all travel orders with optional filters.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/travel-orders",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/travel-orders"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n \"data\": [\n   {\n     \"id\": 1,\n     \"requester_name\": \"Maria Souza\",\n     \"destination\": \"Rio de Janeiro\",\n     \"departure_date\": \"2025-02-09\",\n     \"return_date\": \"2025-02-16\",\n     \"status\": \"approved\",\n     \"created_at\": \"2025-02-02 23:17:48\",\n     \"updated_at\": \"2025-02-02 23:17:48\",\n     \"created_by\": { \"id\": 2, \"name\": \"Maria Souza\" }\n   }\n ],\n \"message\": {\n   \"text\": \"Pedidos de viagem listados com sucesso.\",\n   \"type\": \"info\"\n }\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Store a new travel order.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/travel-orders",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/travel-orders"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"requester_name\":\"Maria Souza\",\"destination\":\"Rio de Janeiro\",\"departure_date\":\"2025-02-09\",\"return_date\":\"2025-02-16\"}"
+                        },
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 201,
+                            "body": "{\n \"message\": \"Pedido criado com sucesso!\",\n \"data\": {\n   \"id\": 2,\n   \"requester_name\": \"Maria Souza\",\n   \"destination\": \"Rio de Janeiro\",\n   \"departure_date\": \"2025-02-09\",\n   \"return_date\": \"2025-02-16\",\n   \"status\": \"requested\",\n   \"created_at\": \"2025-02-02 23:17:48\",\n   \"updated_at\": \"2025-02-02 23:17:48\",\n   \"created_by\": { \"id\": 2, \"name\": \"Maria Souza\" }\n }\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Show a specific travel order by ID.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/travel-orders\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/travel-orders\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "esse",
+                                    "description": "The ID of the travel order."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n \"data\": {\n   \"id\": 2,\n   \"requester_name\": \"Maria Souza\",\n   \"destination\": \"Rio de Janeiro\",\n   \"departure_date\": \"2025-02-09\",\n   \"return_date\": \"2025-02-16\",\n   \"status\": \"approved\",\n   \"created_at\": \"2025-02-02 23:17:48\",\n   \"updated_at\": \"2025-02-02 23:17:48\",\n   \"created_by\": { \"id\": 2, \"name\": \"Maria Souza\" }\n },\n \"message\": {\n   \"text\": \"Pedido de viagem encontrado com sucesso.\",\n   \"type\": \"info\"\n }\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Update an existing travel order.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/travel-orders\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/travel-orders\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "fuga",
+                                    "description": "The ID of the travel order."
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"requester_name\":\"velit\",\"destination\":\"voluptatibus\",\"departure_date\":\"perferendis\",\"return_date\":\"omnis\",\"status\":\"reiciendis\"}"
+                        },
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n \"message\": \"Pedido atualizado com sucesso!\",\n \"data\": {\n   \"id\": 2,\n   \"requester_name\": \"Maria Souza\",\n   \"destination\": \"Rio de Janeiro\",\n   \"departure_date\": \"2025-02-09\",\n   \"return_date\": \"2025-02-16\",\n   \"status\": \"approved\",\n   \"created_at\": \"2025-02-02 23:17:48\",\n   \"updated_at\": \"2025-02-02 23:17:48\",\n   \"created_by\": { \"id\": 2, \"name\": \"Maria Souza\" }\n }\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Remove a travel order.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/travel-orders\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/travel-orders\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "quas",
+                                    "description": "The ID of the travel order."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n \"message\": \"Pedido removido com sucesso!\"\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Update the status of a travel order.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/travel-orders\/:id\/status",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/travel-orders\/:id\/status",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "porro",
+                                    "description": "The ID of the travel order."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"status\":\"est\"}"
+                        },
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n \"message\": \"Status do pedido atualizado com sucesso!\",\n \"data\": {\n   \"id\": 2,\n   \"requester_name\": \"Maria Souza\",\n   \"destination\": \"Rio de Janeiro\",\n   \"departure_date\": \"2025-02-09\",\n   \"return_date\": \"2025-02-16\",\n   \"status\": \"approved\",\n   \"created_at\": \"2025-02-02 23:17:48\",\n   \"updated_at\": \"2025-02-02 23:17:48\",\n   \"created_by\": { \"id\": 2, \"name\": \"Maria Souza\" }\n }\n}",
+                            "name": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "User Management",
+            "description": "",
+            "item": [
+                {
+                    "name": "Login a user.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/login",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/login"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"email\":\"johndoe@example.com\",\"password\":\"secret\"}"
+                        },
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n \"data\": {\n   \"id\": 1,\n   \"name\": \"John Doe\",\n   \"email\": \"johndoe@example.com\"\n },\n \"access_token\": \"Bearer <token>\",\n \"token_type\": \"Bearer\",\n \"message\": {\n   \"text\": \"Login realizado com sucesso!\",\n   \"type\": \"success\"\n }\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "List all users.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/users",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/users"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n \"data\": [\n   {\n     \"id\": 1,\n     \"name\": \"John Doe\",\n     \"email\": \"johndoe@example.com\"\n   }\n ],\n \"message\": {\n   \"text\": \"Lista de usu\u00e1rios recuperada com sucesso.\",\n   \"type\": \"info\"\n }\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Create a new user.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/users",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/users"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"John Doe\",\"email\":\"johndoe@example.com\",\"password\":\"secret\"}"
+                        },
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 201,
+                            "body": "{\n \"data\": {\n   \"id\": 1,\n   \"name\": \"John Doe\",\n   \"email\": \"johndoe@example.com\"\n },\n \"message\": {\n   \"text\": \"Usu\u00e1rio criado com sucesso.\",\n   \"type\": \"success\"\n }\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Update an existing user.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/users\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/users\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "1",
+                                    "description": "The ID of the user."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"John Doe\",\"email\":\"johndoe@example.com\",\"password\":\"newpassword\"}"
+                        },
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n \"data\": {\n   \"id\": 1,\n   \"name\": \"John Doe\",\n   \"email\": \"johndoe@example.com\"\n },\n \"message\": {\n   \"text\": \"Usu\u00e1rio atualizado com sucesso.\",\n   \"type\": \"success\"\n }\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Delete a user.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/users\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/users\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "1",
+                                    "description": "The ID of the user."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 204,
+                            "body": "{\n \"message\": {\n   \"text\": \"Usu\u00e1rio exclu\u00eddo com sucesso.\",\n   \"type\": \"success\"\n }\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Logout a user.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/logout",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/logout"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n \"message\": {\n   \"text\": \"Logout realizado com sucesso!\",\n   \"type\": \"success\"\n }\n}",
+                            "name": ""
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "auth": {
+        "type": "noauth"
+    }
+}

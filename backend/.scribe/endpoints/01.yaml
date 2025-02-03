@@ -1,0 +1,454 @@
+name: 'Travel Orders'
+description: ''
+endpoints:
+  -
+    httpMethods:
+      - GET
+    uri: api/travel-orders
+    metadata:
+      groupName: 'Travel Orders'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'List all travel orders with optional filters.'
+      description: ''
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+           "data": [
+             {
+               "id": 1,
+               "requester_name": "Maria Souza",
+               "destination": "Rio de Janeiro",
+               "departure_date": "2025-02-09",
+               "return_date": "2025-02-16",
+               "status": "approved",
+               "created_at": "2025-02-02 23:17:48",
+               "updated_at": "2025-02-02 23:17:48",
+               "created_by": { "id": 2, "name": "Maria Souza" }
+             }
+           ],
+           "message": {
+             "text": "Pedidos de viagem listados com sucesso.",
+             "type": "info"
+           }
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - POST
+    uri: api/travel-orders
+    metadata:
+      groupName: 'Travel Orders'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Store a new travel order.'
+      description: ''
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      requester_name:
+        name: requester_name
+        description: 'O nome do solicitante.'
+        required: true
+        example: 'Maria Souza'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      destination:
+        name: destination
+        description: 'O destino da viagem.'
+        required: true
+        example: 'Rio de Janeiro'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      departure_date:
+        name: departure_date
+        description: 'A data de partida.'
+        required: true
+        example: '2025-02-09'
+        type: date
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      return_date:
+        name: return_date
+        description: 'A data de retorno.'
+        required: true
+        example: '2025-02-16'
+        type: date
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+    cleanBodyParameters:
+      requester_name: 'Maria Souza'
+      destination: 'Rio de Janeiro'
+      departure_date: '2025-02-09'
+      return_date: '2025-02-16'
+    fileParameters: []
+    responses:
+      -
+        status: 201
+        content: |-
+          {
+           "message": "Pedido criado com sucesso!",
+           "data": {
+             "id": 2,
+             "requester_name": "Maria Souza",
+             "destination": "Rio de Janeiro",
+             "departure_date": "2025-02-09",
+             "return_date": "2025-02-16",
+             "status": "requested",
+             "created_at": "2025-02-02 23:17:48",
+             "updated_at": "2025-02-02 23:17:48",
+             "created_by": { "id": 2, "name": "Maria Souza" }
+           }
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - GET
+    uri: 'api/travel-orders/{id}'
+    metadata:
+      groupName: 'Travel Orders'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Show a specific travel order by ID.'
+      description: ''
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        name: id
+        description: 'The ID of the travel order.'
+        required: true
+        example: esse
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      id: esse
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+           "data": {
+             "id": 2,
+             "requester_name": "Maria Souza",
+             "destination": "Rio de Janeiro",
+             "departure_date": "2025-02-09",
+             "return_date": "2025-02-16",
+             "status": "approved",
+             "created_at": "2025-02-02 23:17:48",
+             "updated_at": "2025-02-02 23:17:48",
+             "created_by": { "id": 2, "name": "Maria Souza" }
+           },
+           "message": {
+             "text": "Pedido de viagem encontrado com sucesso.",
+             "type": "info"
+           }
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - PATCH
+    uri: 'api/travel-orders/{id}'
+    metadata:
+      groupName: 'Travel Orders'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Update an existing travel order.'
+      description: ''
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        name: id
+        description: 'The ID of the travel order.'
+        required: true
+        example: fuga
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      id: fuga
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      requester_name:
+        name: requester_name
+        description: 'O nome do solicitante.'
+        required: false
+        example: velit
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      destination:
+        name: destination
+        description: 'O destino da viagem.'
+        required: false
+        example: voluptatibus
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      departure_date:
+        name: departure_date
+        description: 'A data de partida.'
+        required: false
+        example: perferendis
+        type: date
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      return_date:
+        name: return_date
+        description: 'A data de retorno.'
+        required: false
+        example: omnis
+        type: date
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      status:
+        name: status
+        description: 'O status da viagem. Exemplo: approved'
+        required: false
+        example: reiciendis
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanBodyParameters:
+      requester_name: velit
+      destination: voluptatibus
+      departure_date: perferendis
+      return_date: omnis
+      status: reiciendis
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+           "message": "Pedido atualizado com sucesso!",
+           "data": {
+             "id": 2,
+             "requester_name": "Maria Souza",
+             "destination": "Rio de Janeiro",
+             "departure_date": "2025-02-09",
+             "return_date": "2025-02-16",
+             "status": "approved",
+             "created_at": "2025-02-02 23:17:48",
+             "updated_at": "2025-02-02 23:17:48",
+             "created_by": { "id": 2, "name": "Maria Souza" }
+           }
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - DELETE
+    uri: 'api/travel-orders/{id}'
+    metadata:
+      groupName: 'Travel Orders'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Remove a travel order.'
+      description: ''
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        name: id
+        description: 'The ID of the travel order.'
+        required: true
+        example: quas
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      id: quas
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+           "message": "Pedido removido com sucesso!"
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - PUT
+    uri: 'api/travel-orders/{id}/status'
+    metadata:
+      groupName: 'Travel Orders'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Update the status of a travel order.'
+      description: ''
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        name: id
+        description: 'The ID of the travel order.'
+        required: true
+        example: porro
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      id: porro
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      status:
+        name: status
+        description: 'O novo status da viagem. Exemplo: approved'
+        required: true
+        example: est
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanBodyParameters:
+      status: est
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+           "message": "Status do pedido atualizado com sucesso!",
+           "data": {
+             "id": 2,
+             "requester_name": "Maria Souza",
+             "destination": "Rio de Janeiro",
+             "departure_date": "2025-02-09",
+             "return_date": "2025-02-16",
+             "status": "approved",
+             "created_at": "2025-02-02 23:17:48",
+             "updated_at": "2025-02-02 23:17:48",
+             "created_by": { "id": 2, "name": "Maria Souza" }
+           }
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
