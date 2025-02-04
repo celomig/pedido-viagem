@@ -19,7 +19,10 @@ services:
       bash -c "apt-get update && apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev libmariadb-dev-compat &&
       docker-php-ext-configure gd --with-freetype --with-jpeg &&
       docker-php-ext-install gd pdo_mysql &&
-      php artisan migrate && php artisan serve --host=0.0.0.0 --port=8000"
+      composer install &&
+      php artisan key:generate &&
+      php artisan migrate &&
+      php artisan serve --host=0.0.0.0 --port=8000"
     working_dir: /var/www/html
     stdin_open: true
     tty: true
