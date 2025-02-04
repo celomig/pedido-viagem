@@ -41,6 +41,11 @@ MAIL_FROM_ADDRESS=
 
 ### Subir os containers Docker
 
+Navegue para a raiz do projeto:
+```sh
+cd pedido-viagem
+```
+
 Na raiz do projeto, execute:
 ```sh
 docker-compose up --build
@@ -54,7 +59,7 @@ Acesse o container do backend:
 docker exec -it travel_laravel bash
 ```
 
-### Rodar seed para o banco e dados (caso ainda não possua dados)
+### Rodar seed para o banco e dados (caso ainda não possua dados no banco). Se já possuir, esse comando irá gerar um erro, apenas ignore.
 
 Ainda dentro do container do backend:
 ```sh
@@ -63,7 +68,7 @@ php artisan db:seed
 
 ### Executar os testes do backend
 ```sh
-php artisan test
+php artisan test --testsuite=Feature
 ```
 
 ### Acessar a aplicação
@@ -71,24 +76,12 @@ php artisan test
 Após subir os containers, acesse:
 - **Frontend**: [http://localhost:8080](http://localhost:8080)
 - **Backend (API)**: [http://localhost:8000](http://localhost:8000)
-- **Banco de Dados (MySQL)**: `localhost:3311`
 
-## Comandos Úteis
+### Dados de Acesso para Testes
 
-### Parar os containers
-```sh
-docker-compose down
-```
-
-### Verificar logs dos containers
-```sh
-docker-compose logs -f
-```
-
-### Executar um comando no backend
-```sh
-docker exec -it travel_laravel bash
-```
+Agora, no link do front, use este usuário para acesso:
+- **E-mail:** joao@example.com
+- **Senha:** password123
 
 ## Documentação da API
 
