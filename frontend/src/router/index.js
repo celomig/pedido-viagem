@@ -44,7 +44,7 @@ export default new Router({
     },   
     {
       path: '/travel-orders/edit/:id',
-      name: 'RequestTravel',
+      name: 'EditTravelOrder',
       component: RequestTravel, 
       props: true, // Passa os parâmetros da URL como props para o componente
     },

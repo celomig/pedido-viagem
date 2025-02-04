@@ -1,20 +1,24 @@
 import Vue from 'vue';
 import App from './App.vue';
 import VueRouter from 'vue-router';
-import Vuex from 'vuex';  // Verifique se o Vuex foi importado
+import Vuex from 'vuex';
 import Login from './components/auth/LoginForm.vue';
 import Dashboard from './components/TravelOrders/Dashboard.vue';
 import RequestTravel from './components/TravelOrders/RequestTravel.vue';
 import TravelOrdersList from './components/TravelOrders/TravelOrdersList.vue';
-import store from './store';  // Verifique se você está importando o store corretamente
+import store from './store';
+import Vuetify from 'vuetify';
+import 'vuetify/dist/vuetify.min.css';
+import VueNotification from 'vue-notification';
 
-Vue.config.productionTip = false;
+Vue.use(VueNotification);
 
-// Ativar Vue Router e Vuex
+Vue.use(Vuetify);
 Vue.use(VueRouter);
 Vue.use(Vuex);
 
-// Definir as rotas
+const vuetify = new Vuetify(); 
+
 const routes = [
   { path: '/login', component: Login, meta: { title: 'Login' } },
   { path: '/dashboard', component: Dashboard, meta: { title: 'Dashboard' } },
@@ -23,21 +27,18 @@ const routes = [
   { path: '/travel-orders/edit/:id', component: RequestTravel, meta: { title: 'Editar Pedido de Viagem' } },
 ];
 
-
-// Criar a instância do roteador
 const router = new VueRouter({
-  mode: 'history', // Garante URLs amigáveis sem #
+  mode: 'history',
   routes
 });
 
 router.afterEach((to) => {
-  // Define o título da página com base na rota
-  document.title = 'Pedido Viagem - ' + to.meta.title || 'Pedido Viagem'; 
+  document.title = 'Pedido Viagem - ' + (to.meta.title || 'Pedido Viagem'); 
 });
 
-// Criar e montar a aplicação Vue
 new Vue({
+  vuetify,  
   router,
-  store,  // Certifique-se de que o store está sendo passado aqui
+  store,
   render: h => h(App)
 }).$mount('#app');

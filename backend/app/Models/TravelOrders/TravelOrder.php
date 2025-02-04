@@ -32,6 +32,20 @@ class TravelOrder extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
-}
+    }
+
+    public function getStatusInPortugueseAttribute()
+    {
+        switch ($this->status) {
+            case 'requested':
+                return 'Solicitado';
+            case 'approved':
+                return 'Aprovado';
+            case 'canceled':
+                return 'Cancelado';
+            default:
+                return $this->status; 
+        } 
+    }
 
 }

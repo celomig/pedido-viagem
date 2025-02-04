@@ -13,7 +13,6 @@ class UsersTableSeeder extends Seeder
      */
     public function run(): void
     {
-        // Cria dois usuários
         User::create([
             'name' => 'João Silva',
             'email' => 'joao@example.com',
@@ -24,6 +23,12 @@ class UsersTableSeeder extends Seeder
             'name' => 'Maria Souza',
             'email' => 'maria@example.com',
             'password' => 'password123',
+        ]);
+
+        User::create([
+            'name' => 'Marcelo Migliorini',
+            'email' => 'marcelommigliorini@icloud.com',
+            'password' => 'secret1',
         ]);
     }
 }

@@ -1,36 +1,70 @@
 <template>
-  <div>
-    <!-- Cabeçalho com logo -->
-    <header class="header">
-      <div class="logo">Pedido Viagem</div>
-    </header>
+  <v-app>
+    <!-- Barra de Aplicação -->
+    <v-app-bar color="primary" dark app>
+      <v-toolbar-title>Pedido Viagem</v-toolbar-title>
+      <v-spacer></v-spacer>
+      
+      <!-- Exibe a navegação apenas se não estiver na tela de login -->
+      <template v-if="isNotLoginRoute">
+        <v-btn text to="/dashboard">Dashboard</v-btn>
+        <v-btn text to="/request-travel">Solicitar Viagem</v-btn>
+        <v-btn text to="/travel-list">Consultar Solicitações</v-btn>
+        <v-btn text @click="logout">Sair</v-btn>
+      </template>
+    </v-app-bar>
 
-    <!-- Botões de navegação -->
-    <nav class="navbar" v-if="isNotLoginRoute">
-      <router-link to="/dashboard" class="nav-btn">Dashboard</router-link>
-      <router-link to="/request-travel" class="nav-btn">Solicitar Viagem</router-link>
-      <router-link to="/travel-list" class="nav-btn">Consultar solicitações</router-link>
-      <button @click="logout" class="nav-btn">Sair</button>
-    </nav>
+    <!-- Menu lateral responsivo para mobile -->
+    <v-navigation-drawer v-model="drawer" app temporary>
+      <v-list>
+        <v-list-item to="/dashboard">
+          <v-list-item-icon><v-icon>mdi-view-dashboard</v-icon></v-list-item-icon>
+          <v-list-item-content><v-list-item-title>Dashboard</v-list-item-title></v-list-item-content>
+        </v-list-item>
+
+        <v-list-item to="/request-travel">
+          <v-list-item-icon><v-icon>mdi-airplane</v-icon></v-list-item-icon>
+          <v-list-item-content><v-list-item-title>Solicitar Viagem</v-list-item-title></v-list-item-content>
+        </v-list-item>
+
+        <v-list-item to="/travel-list">
+          <v-list-item-icon><v-icon>mdi-file-document</v-icon></v-list-item-icon>
+          <v-list-item-content><v-list-item-title>Consultar Solicitações</v-list-item-title></v-list-item-content>
+        </v-list-item>
+
+        <v-list-item @click="logout">
+          <v-list-item-icon><v-icon>mdi-logout</v-icon></v-list-item-icon>
+          <v-list-item-content><v-list-item-title>Sair</v-list-item-title></v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+
+    <!-- Ícone de menu para abrir a navegação no mobile -->
+    <v-app-bar-nav-icon @click="drawer = !drawer" v-if="isNotLoginRoute"></v-app-bar-nav-icon>
 
     <!-- Conteúdo principal -->
-    <router-view></router-view>
-  </div>
+    <v-main>
+      <router-view></router-view>
+    </v-main>
+
+    <notifications group="notification"></notifications>
+  </v-app>
 </template>
 
 <script>
-
-
 export default {
+  data() {
+    return {
+      drawer: false, // Controla o menu lateral no mobile
+    };
+  },
   computed: {
-    // Verifica se a rota ativa não é a de login
     isNotLoginRoute() {
-      return this.$route.path !== '/login';  // Verifica se o nome da rota atual é diferente de 'Login'
+      return this.$route.path !== '/login';
     }
   },
   methods: {
     logout() {
-      // Implementação para logout
       this.$store.dispatch('logout');
       this.$router.push('/login');
     }
@@ -39,69 +73,5 @@ export default {
 </script>
 
 <style scoped>
-/* Fontes Globais */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Roboto', sans-serif;
-}
-
-/* Cabeçalho */
-.header {
-  background-color: #0066b3;  /* Azul semelhante ao usado no site */
-  color: white;
-  padding: 20px 30px;
-  text-align: left;
-  font-size: 26px;
-  font-weight: 700;
-  font-family: 'Montserrat', sans-serif;  /* Fonte para o logo */
-}
-
-.logo {
-  font-size: 28px;
-}
-
-/* Navegação */
-.navbar {
-  background-color: #f4f4f4;  /* Cinza claro */
-  padding: 16px 0;
-  display: flex;
-  justify-content: space-around;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  border-top: 4px solid #0066b3; /* Linha superior para dar mais destaque */
-}
-
-.nav-btn {
-  padding: 12px 25px;
-  background-color: #0066b3;  /* Azul do botão */
-  color: white;
-  border: none;
-  border-radius: 25px;  /* Botões com borda arredondada */
-  text-decoration: none;
-  font-size: 16px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  font-family: 'Roboto', sans-serif;
-  font-weight: 500;
-}
-
-.nav-btn:hover {
-  background-color: #005bb5;  /* Cor mais escura para o hover */
-  cursor: pointer;
-  transform: scale(1.05);  /* Leve aumento de tamanho no hover */
-}
-
-/* Responsividade - Ajustes para telas menores */
-@media (max-width: 768px) {
-  .navbar {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .nav-btn {
-    width: 90%;  /* Botões com largura adaptada em dispositivos móveis */
-    margin-bottom: 15px;
-  }
-}
 
 </style>

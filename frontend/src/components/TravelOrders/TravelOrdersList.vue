@@ -1,70 +1,125 @@
 <template>
-  <div class="travel-orders-list-container">
-    <h2>Lista de Pedidos de Viagem</h2>
+  <v-container>
+    <v-card class="travel-orders-list-container">
+      <v-card-title>
+        <h2>Lista de Pedidos de Viagem</h2>
+      </v-card-title>
 
-    <div class="filters">
-      <h4>Filtrar:</h4>
-      <hr>
-      Solicitante: <input v-model="filters.requester_name" placeholder="Solicitante" />
-      <hr>
-      Destino: <input v-model="filters.destination" placeholder="Destino" />
-      <hr>
-      Data de partida: <input v-model="filters.departure_date_from" type="date" placeholder="Data de Partida (de)" />
-       até <input v-model="filters.departure_date_to" type="date" placeholder="Data de Partida (até)" />
-       <hr>
-      Data de retorno: <input v-model="filters.return_date_from" type="date" placeholder="Data de Retorno (de)" />
-      até <input v-model="filters.return_date_to" type="date" placeholder="Data de Retorno (até)" />
-      
-      <!-- Botão de Aplicar Filtros -->
-      <!-- <button @click="applyFilters">Aplicar Filtros</button> -->
+      <v-card-text class="filters">
+        <v-row>
+          <v-col cols="12">
+            <h4>Filtrar:</h4>
+            <v-divider></v-divider>
+          </v-col>
 
-      <button @click="clearFilters">Limpar Filtros</button>
-    </div>
+          <v-col cols="12" sm="6" md="4">
+            <v-text-field
+              v-model="filters.requester_name"
+              label="Solicitante"
+              outlined
+              dense
+            ></v-text-field>
+          </v-col>
 
-    <!-- Exibindo a lista de pedidos de viagem -->
-    <div v-if="isLoading">Carregando...</div>
-    <div v-if="error">{{ error }}</div>
-    <div v-if="successMessage" class="success-message">{{ successMessage }}</div>
+          <v-col cols="12" sm="6" md="4">
+            <v-text-field
+              v-model="filters.destination"
+              label="Destino"
+              outlined
+              dense
+            ></v-text-field>
+          </v-col>
 
-    <table v-if="travelOrders.length > 0">
-      <thead>
-        <tr>
-          <th>Solicitante</th>
-          <th>Destino</th>
-          <th>Data de Partida</th>
-          <th>Data de Retorno</th>
-          <th>Cadastrado por</th>
-          <th>Status</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(order, index) in filteredTravelOrders" :key="index">
-          <td>{{ order.requester_name }}</td>
-          <td>{{ order.destination }}</td>
-          <td>{{ formatDate(order.departure_date) }}</td>
-          <td>{{ formatDate(order.return_date) }}</td>
-          <td>
-            <span>
-              {{ order.created_by.name }}
-            </span>
-          </td>
-          <td>
-            {{ getStatusText(order.status) }}
-          </td>
-          <td>
-            <button @click="editOrder(order.id)">Editar</button>
-            <button @click="deleteOrder(order.id)">Remover</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+        </v-row>
+        <v-row>
 
-    <!-- Caso não tenha pedidos -->
-    <p v-if="travelOrders.length === 0">Nenhum pedido de viagem encontrado.</p>
-  </div>
-    
+          <v-col cols="12" sm="6" md="4">
+            <v-text-field
+              v-model="filters.departure_date_from"
+              label="Data de Partida (de)"
+              type="date"
+              outlined
+              dense
+            ></v-text-field>
+          </v-col>
+
+          <v-col cols="12" sm="6" md="4">
+            <v-text-field
+              v-model="filters.departure_date_to"
+              label="Data de Partida (até)"
+              type="date"
+              outlined
+              dense
+            ></v-text-field>
+          </v-col>
+
+        </v-row>
+        <v-row>
+
+          <v-col cols="12" sm="6" md="4">
+            <v-text-field
+              v-model="filters.return_date_from"
+              label="Data de Retorno (de)"
+              type="date"
+              outlined
+              dense
+            ></v-text-field>
+          </v-col>
+
+          <v-col cols="12" sm="6" md="4">
+            <v-text-field
+              v-model="filters.return_date_to"
+              label="Data de Retorno (até)"
+              type="date"
+              outlined
+              dense
+            ></v-text-field>
+          </v-col>
+
+          <v-col cols="12"  sm="6" md="4">
+            <v-btn @click="clearFilters" color="secondary">Limpar Filtros</v-btn>
+          </v-col>
+        </v-row>
+
+        <v-alert v-if="isLoading" type="info">Carregando...</v-alert>
+        <v-alert v-if="error" type="error">{{ error }}</v-alert>
+        <v-alert v-if="successMessage" type="success">{{ successMessage }}</v-alert>
+
+        <v-data-table
+          v-if="travelOrders.length > 0"
+          :headers="headers"
+          :items="filteredTravelOrders"
+          :loading="isLoading"
+          class="elevation-1"
+          hide-rows-per-page
+          :items-per-page="100"
+          hide-default-footer
+        >
+          <template v-slot:item="{ item }">
+            <tr>
+              <td>{{ item.id }}</td>
+              <td>{{ item.requester_name }}</td>
+              <td>{{ item.destination }}</td>
+              <td>{{ formatDate(item.departure_date) }}</td>
+              <td>{{ formatDate(item.return_date) }}</td>
+              <td>{{ item.created_by.name }}</td>
+              <td>{{ getStatusText(item.status) }}</td>
+              <td>
+                <v-btn small color="primary" @click="editOrder(item.id)">Editar</v-btn>
+                <v-btn small color="error" @click="deleteOrder(item.id)">Remover</v-btn>
+              </td>
+            </tr>
+          </template>
+        </v-data-table>
+
+
+        <v-alert v-if="travelOrders.length === 0" type="info">Nenhum pedido de viagem encontrado.</v-alert>
+      </v-card-text>
+    </v-card>
+  </v-container>
 </template>
+
+
 
 <script>
 import axios from 'axios';
@@ -86,6 +141,16 @@ export default {
       isLoading: false,
       error: null, // Para exibir mensagens de erro
       successMessage: null, // Para exibir mensagens de sucesso
+      headers: [
+        { text: 'Id', value: 'id' },
+        { text: 'Solicitante', value: 'requester_name' },
+        { text: 'Destino', value: 'destination' },
+        { text: 'Data de Partida', value: 'departure_date' },
+        { text: 'Data de Retorno', value: 'return_date' },
+        { text: 'Cadastrado por', value: 'created_by.name' },
+        { text: 'Status', value: 'status' },
+        { text: 'Ações', value: 'actions', sortable: false },
+      ],
     };
   },
   computed: {
@@ -247,17 +312,17 @@ export default {
     },
   },
   created() {
+    if (!this.token) {
+      this.$router.push('/login');
+      return;
+    }
+    
     this.fetchTravelOrders(); // Carregar os pedidos de viagem ao carregar o componente
   },
 };
 </script>
 
 <style scoped>
-hr {
-  border: none;         
-  height: 1px;          
-  background-color: #f0f0f0; 
-}
 .travel-orders-list-container {
   margin: 20px;
 }

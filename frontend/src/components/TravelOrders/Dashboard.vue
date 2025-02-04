@@ -1,46 +1,78 @@
 <template>
-  <div class="dashboard">
-    <h2>Pedidos de Viagem</h2>
+  <v-container>
+    <v-card>
+      <v-card-title>
+        <v-icon left>mdi-airplane</v-icon>
+        Pedidos de Viagem
+        <v-spacer></v-spacer>
+        <v-select
+          v-model="selectedStatus"
+          :items="statusOptions"
+          label="Filtrar por Status"
+          dense
+          outlined
+          @change="fetchTravelOrders"
+        ></v-select>
+      </v-card-title>
 
-    <!-- Filtro por status -->
-    <label for="status">Filtrar por Status:</label>
-    <select v-model="selectedStatus" @change="fetchTravelOrders">
-      <option value="">Todos</option>
-      <option value="requested">Solicitado</option>
-      <option value="approved">Aprovado</option>
-      <option value="canceled">Cancelado</option>
-    </select>
+      <v-card-text>
+        <v-progress-circular v-if="loading" indeterminate color="primary"></v-progress-circular>
+        <v-data-table
+          v-else
+          :headers="headers"
+          :items="travelOrders"
+          class="elevation-1"
+          dense
+          hide-rows-per-page
+          :items-per-page="100"
+          hide-default-footer
+        >
+          <template v-slot:item="{ item }">
+            <tr>
+              <td>{{ item.id }}</td>
+              <td>{{ item.requester_name }}</td>
+              <td>{{ item.destination }}</td>
+              <td>{{ formatDate(item.departure_date) }}</td>
+              <td>{{ formatDate(item.return_date) }}</td>
+              <td>
+                <v-chip
+                  :color="getStatusColor(item.status)"
+                  dark
+                  small
+                  outlined
+                  class="status-chip"
+                  @click="openStatusModal(item)"
+                >
+                  {{ getStatusText(item.status) }}
+                </v-chip>
+              </td>
+            </tr>
+          </template>
+        </v-data-table>
+      </v-card-text>
+    </v-card>
 
-    <!-- Loading Spinner -->
-    <div v-if="loading" class="loading-spinner">
-      Carregando...
-      <div class="spinner"></div>
-    </div>
-
-    <!-- Tabela de Pedidos -->
-    <table v-if="!loading">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Solicitante</th>
-          <th>Destino</th>
-          <th>Data de Partida</th>
-          <th>Data de Retorno</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="order in travelOrders" :key="order.id">
-          <td>{{ order.id }}</td>
-          <td>{{ order.requester_name }}</td>
-          <td>{{ order.destination }}</td>
-          <td>{{ formatDate(order.departure_date) }}</td>
-          <td>{{ formatDate(order.return_date) }}</td>
-          <td>{{ getStatusText(order.status) }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+    <v-dialog v-model="statusModal" max-width="500px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">Alterar Status</span>
+        </v-card-title>
+        <v-card-text>
+          <v-select
+            v-model="newStatus"
+            :items="filteredStatusOptions"
+            label="Selecione o novo status"
+            outlined
+            dense
+          ></v-select>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="blue" @click="updateStatus" :disabled="!newStatus">Confirmar</v-btn>
+          <v-btn color="gray" @click="statusModal = false">Cancelar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-container>
 </template>
 
 <script>
@@ -51,56 +83,103 @@ export default {
   data() {
     return {
       travelOrders: [],
-      selectedStatus: '', // Default "Todos" selection (empty string)
+      selectedStatus: '',
       loading: false,
+      headers: [
+        { text: 'ID', value: 'id' },
+        { text: 'Solicitante', value: 'requester_name' },
+        { text: 'Destino', value: 'destination' },
+        { text: 'Partida', value: 'departure_date' },
+        { text: 'Retorno', value: 'return_date' },
+        { text: 'Status', value: 'status' },
+      ],
+      statusOptions: [
+        { text: 'Todos', value: '' },
+        { text: 'Solicitado', value: 'requested' },
+        { text: 'Aprovado', value: 'approved' },
+        { text: 'Cancelado', value: 'canceled' },
+      ],
+      statusModal: false,
+      newStatus: null,
+      currentOrder: null,
     };
   },
+  computed: {
+    filteredStatusOptions() {
+      if (!this.currentOrder) return this.statusOptions.filter(status => status.value !== '');
+
+      return this.currentOrder.status === 'requested'
+        ? this.statusOptions.filter(status => status.value !== '') // Remove "Todos"
+        : this.statusOptions.filter(status => status.value !== 'requested' && status.value !== '');
+    }
+  },
   methods: {
-    // Método para buscar os pedidos de viagem
     async fetchTravelOrders() {
       this.loading = true;
       try {
         const token = this.$store.state.auth.token;
-        
-        // Cria o objeto de parâmetros sem o status vazio
-        const params = {};
-        if (this.selectedStatus) {
-          params.status = this.selectedStatus;
-        }
-
+        const params = this.selectedStatus ? { status: this.selectedStatus } : {};
         const response = await axios.get(`${process.env.VUE_APP_API_URL}/api/travel-orders`, {
           params,
           headers: { Authorization: `Bearer ${token}` },
         });
         this.travelOrders = response.data;
       } catch (error) {
-        console.error('Erro ao buscar pedidos de viagem:', error);
-        if (error.response && error.response.status === 401) {
-          this.$router.push('/login');
-        }
+        this.handleRequestError(error, 'Erro ao buscar pedidos de viagem');
       } finally {
         this.loading = false;
       }
     },
-    // Método para traduzir o status
-    getStatusText(status) {
-      const statusMap = {
-        requested: 'Solicitado',
-        approved: 'Aprovado',
-        canceled: 'Cancelado',
-      };
-      return statusMap[status] || status;
+    async updateStatus() {
+      try {
+        const token = this.$store.state.auth.token;
+        const response = await axios.put(
+          `${process.env.VUE_APP_API_URL}/api/travel-orders/${this.currentOrder.id}/status`,
+          { status: this.newStatus },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        this.showNotification('success', 'Sucesso!', response.data.message);
+        this.fetchTravelOrders();
+        this.statusModal = false; // Fecha o modal após sucesso
+      } catch (error) {
+        this.handleRequestError(error, 'Erro ao atualizar status');
+      }
+    },
+    openStatusModal(order) {
+      this.currentOrder = order;
+      this.newStatus = order.status;
+      this.statusModal = true;
     },
     formatDate(date) {
-      const dateObject = new Date(date);
-      
-      // Ajuste para garantir que a data não tenha problemas com fusos horários
-      const day = String(dateObject.getUTCDate()).padStart(2, '0');
-      const month = String(dateObject.getUTCMonth() + 1).padStart(2, '0');
-      const year = dateObject.getUTCFullYear();
-
-      return `${day}/${month}/${year}`;
-    }
+      return new Date(date).toLocaleDateString('pt-BR');
+    },
+    getStatusText(status) {
+      return this.statusOptions.find(option => option.value === status)?.text || status;
+    },
+    getStatusColor(status) {
+      return {
+        requested: 'blue',
+        approved: 'green',
+        canceled: 'red',
+      }[status] || 'gray';
+    },
+    showNotification(type, title, message) {
+      this.$notify({
+        group: 'notification',
+        type,
+        title,
+        text: message,
+        classes: 'notification-custom',
+      });
+    },
+    handleRequestError(error, defaultMessage) {
+      const message = error.response?.data?.message || defaultMessage;
+      this.showNotification('error', 'Erro', message);
+      if (error.response?.status === 401) {
+        this.$router.push('/login');
+      }
+    },
   },
   mounted() {
     this.fetchTravelOrders();
@@ -109,48 +188,8 @@ export default {
 </script>
 
 <style scoped>
-.dashboard {
-  max-width: 800px;
-  margin: 20px auto;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
-th, td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
-}
-th {
-  background-color: #007bff;
-  color: white;
-}
-
-.loading-spinner {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 18px;
-  margin-top: 20px;
-}
-
-.spinner {
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #3498db;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.status-chip {
+  border-radius: 4px;
+  cursor: pointer;
 }
 </style>

@@ -1,75 +1,106 @@
 <template>
   <div class="request-travel-container">
-    <h2>{{ isEdit ? 'Editar Pedido de Viagem' : 'Cadastrar Pedido de Viagem' }}</h2>
+    <v-container>
+      <v-row>
+        <v-col cols="12" md="8" offset-md="2">
+          <v-card>
+            <v-card-title>
+              <span class="headline">{{ isEdit ? 'Editar Pedido de Viagem' : 'Cadastrar Pedido de Viagem' }}</span>
+            </v-card-title>
 
-    <!-- Exibe o spinner durante o carregamento -->
-    <div v-if="isLoading" class="loading-spinner">
-      <div class="spinner"></div>
-    </div>
+            <!-- Exibe o spinner durante o carregamento -->
+            <v-progress-circular
+              v-if="isLoading"
+              indeterminate
+              color="primary"
+              size="64"
+              width="6"
+              class="loading-spinner"
+            ></v-progress-circular>
 
-    <form v-if="!isSubmitted && !isLoading" @submit.prevent="handleSubmit">
-      <div>
-        <label for="requester_name">Nome do Solicitante</label>
-        <input 
-          type="text" 
-          id="requester_name" 
-          v-model="requester_name" 
-          placeholder="Digite o nome do solicitante" 
-          required
-        />
-      </div>
+            <v-card-text>
+              <form v-if="!isSubmitted && !isLoading" @submit.prevent="handleSubmit">
+                <v-text-field
+                  v-model="requester_name"
+                  label="Nome do Solicitante"
+                  placeholder="Digite o nome do solicitante"
+                  required
+                  :error-messages="error && !requester_name ? ['Nome do solicitante é obrigatório'] : []"
+                ></v-text-field>
 
-      <div>
-        <label for="destination">Destino</label>
-        <input 
-          type="text" 
-          id="destination" 
-          v-model="destination" 
-          placeholder="Digite o destino da viagem" 
-          required
-        />
-      </div>
+                <v-text-field
+                  v-model="destination"
+                  label="Destino"
+                  placeholder="Digite o destino da viagem"
+                  required
+                  :error-messages="error && !destination ? ['Destino é obrigatório'] : []"
+                ></v-text-field>
 
-      <div>
-        <label for="departure_date">Data de Partida</label>
-        <input 
-          type="date" 
-          id="departure_date" 
-          v-model="departure_date" 
-          required
-        />
-      </div>
+                <v-dialog v-model="departureDatePicker" max-width="290px">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      v-bind="attrs"
+                      v-on="on"
+                      v-model="departure_date"
+                      label="Data de Partida"
+                      readonly
+                      required
+                      :value="formattedDepartureDate"
+                      :error-messages="error && !departure_date ? ['Data de partida é obrigatória'] : []"
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker
+                    v-model="departure_date"
+                    @input="departureDatePicker = false"
+                    :locale="'pt-br'"
+                  ></v-date-picker>
+                </v-dialog>
 
-      <div>
-        <label for="return_date">Data de Retorno</label>
-        <input 
-          type="date" 
-          id="return_date" 
-          v-model="return_date" 
-          required
-        />
-      </div>
+                <v-dialog v-model="returnDatePicker" max-width="290px">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      v-bind="attrs"
+                      v-on="on"
+                      v-model="return_date"
+                      label="Data de Retorno"
+                      readonly
+                      required
+                      :value="formattedReturnDate"
+                      :error-messages="error && !return_date ? ['Data de retorno é obrigatória'] : []"
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker
+                    v-model="return_date"
+                    @input="returnDatePicker = false"
+                    :locale="'pt-br'"
+                  ></v-date-picker>
+                </v-dialog>
 
-      <div v-if="error" class="error-message">
-        {{ error }}
-      </div>
-
-      <button type="submit" :disabled="isLoading">
-        {{ isLoading ? 'Carregando...' : isEdit ? 'Atualizar Pedido' : 'Cadastrar Pedido' }}
-      </button>
-    </form>
-
-    <!-- Exibe a mensagem de sucesso quando o pedido for cadastrado -->
-    <div v-if="isSubmitted" class="success-message">
-      <p>{{ successMessage }}</p>
-    </div>
+                <v-btn
+                  :loading="isLoading"
+                  :disabled="isLoading"
+                  color="primary"
+                  block
+                  type="submit"
+                >
+                  {{ isLoading ? 'Carregando...' : isEdit ? 'Atualizar Pedido' : 'Cadastrar Pedido' }}
+                </v-btn>
+              </form>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
   </div>
 </template>
-
 
 <script>
 import axios from 'axios';
 import { mapState } from 'vuex';
+import moment from 'moment';
+import 'moment/locale/pt-br';
+
+moment.locale('pt-br');
 
 export default {
   name: 'TravelOrdersRequestTravel',
@@ -79,19 +110,48 @@ export default {
       departure_date: '',
       return_date: '',
       requester_name: '',
-      error: null,
       isLoading: false,
-      successMessage: '',
       isSubmitted: false,
+      departureDatePicker: false,
+      returnDatePicker: false,
+      error: null,
+      isEdit: false,
     };
   },
 
   computed: {
     ...mapState({
       token: state => state.auth.token,
-    })
+    }),
+
+    formattedDepartureDate() {
+      return this.departure_date ? moment(this.departure_date).format('DD/MM/YYYY') : '';
+    },
+
+    formattedReturnDate() {
+      return this.return_date ? moment(this.return_date).format('DD/MM/YYYY') : '';
+    },
   },
+
   methods: {
+    showNotification(type, title, message) {
+      this.$notify({
+        group: 'notification',
+        type,
+        title,
+        text: message,
+        classes: 'notification-custom',
+      });
+    },
+
+    handleRequestError(error, defaultMessage) {
+      const message = error.response?.data?.message || defaultMessage;
+      this.showNotification('error', 'Erro', message);
+      if (error.response?.status === 401) {
+        this.$router.push('/login');
+      }
+    },
+
     async fetchTravelOrder(id) {
       this.isLoading = true;
       try {
@@ -110,11 +170,7 @@ export default {
         }
       } catch (error) {
         console.error('Erro ao carregar os dados', error);
-        if (error.response) {
-          this.error = error.response.data.message || 'Erro desconhecido';
-        } else {
-          this.error = 'Erro de rede';
-        }
+        this.handleRequestError(error, 'Erro ao carregar os dados');
       } finally {
         this.isLoading = false;
       }
@@ -128,6 +184,7 @@ export default {
       if (new Date(this.return_date) < new Date(this.departure_date)) {
         this.error = 'A data de retorno não pode ser anterior à data de partida';
         this.isLoading = false;
+        this.showNotification('error', 'Erro', this.error);
         return;
       }
 
@@ -139,19 +196,35 @@ export default {
       };
 
       try {
-        const response = await axios.patch(`${process.env.VUE_APP_API_URL}/api/travel-orders/${this.$route.params.id}`, data, {
-          headers: {
-            Authorization: `Bearer ${this.token}`,
-          },
-        });
+        let response;
 
-        if (response.status === 200) {
-          this.successMessage = response.data.message || "Pedido de viagem atualizado com sucesso!";
+        if (this.isEdit) {
+          // Caso de edição (PATCH)
+          response = await axios.patch(`${process.env.VUE_APP_API_URL}/api/travel-orders/${this.$route.params.id}`, data, {
+            headers: {
+              Authorization: `Bearer ${this.token}`,
+            },
+          });
+        } else {
+          // Caso de cadastro (POST)
+          response = await axios.post(`${process.env.VUE_APP_API_URL}/api/travel-orders`, data, {
+            headers: {
+              Authorization: `Bearer ${this.token}`,
+            },
+          });
+        }
+
+        if (response.status === 200 || response.status === 201) {
+          const message = this.isEdit ? 'Pedido de viagem atualizado com sucesso!' : 'Pedido de viagem cadastrado com sucesso!';
+          this.successMessage = response.data.message || message;
           this.isSubmitted = true;
+
+          // Chamada do notify para sucesso
+          this.showNotification('success', 'Sucesso', this.successMessage);
 
           setTimeout(() => {
             this.$router.push('/travel-list');
-          }, 3000);
+          }, 30);
         }
       } catch (error) {
         if (error.response) {
@@ -159,108 +232,52 @@ export default {
         } else {
           this.error = 'Erro de rede';
         }
+
+        // Chamada do notify para erro
+        this.showNotification('error', 'Erro', this.error);
       } finally {
         this.isLoading = false;
       }
+    },
+
+    resetForm() {
+      this.requester_name = '';
+      this.destination = '';
+      this.departure_date = '';
+      this.return_date = '';
     }
   },
 
+  watch: {
+    '$route.params.id': function (newId) {
+      if (newId) {
+        // Quando houver um ID na URL, significa que estamos editando
+        this.isEdit = true;
+        this.fetchTravelOrder(newId);
+      } else {
+        // Caso contrário, estamos criando
+        this.isEdit = false;
+        this.resetForm();
+      }
+    },
+  },
+
   created() {
+    // A primeira vez que o componente é carregado, verifique o ID
     const { id } = this.$route.params;
+
+    if (!this.token) {
+      this.$router.push('/login');
+      return;
+    }
+
     if (id) {
+      this.isEdit = true;
       this.fetchTravelOrder(id);
+    } else {
+      this.isEdit = false;
+      this.resetForm();
     }
   }
 };
 </script>
-
-
-
-<style scoped>
-.request-travel-container {
-  max-width: 500px;
-  margin: 50px auto;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-}
-
-h2 {
-  text-align: center;
-}
-
-form div {
-  margin-bottom: 15px;
-}
-
-input {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-button {
-  width: 100%;
-  padding: 10px;
-  background-color: #0066b3;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button:disabled {
-  background-color: #ccc;
-}
-
-.loading-spinner {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 150px;
-  text-align: center;
-}
-
-.spinner {
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #0066b3;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.success-message {
-  background-color: #d4edda; 
-  border: 1px solid #c3e6cb; 
-  color: #155724; 
-  padding: 15px;
-  border-radius: 5px; 
-  font-size: 16px;
-  font-weight: bold;
-  margin: 20px 0;
-  text-align: center;
-  box-shadow: 0 0 10px rgba(0, 128, 0, 0.1); 
-}
-
-.error-message {
-  background-color: #f8d7da; 
-  border: 1px solid #f5c6cb; 
-  color: #721c24; 
-  padding: 15px;
-  border-radius: 5px; 
-  font-size: 16px;
-  font-weight: bold;
-  margin: 20px 0;
-  text-align: center;
-  box-shadow: 0 0 10px rgba(255, 0, 0, 0.1); 
-}
-</style>

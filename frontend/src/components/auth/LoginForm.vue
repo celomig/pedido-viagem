@@ -25,7 +25,20 @@
         />
       </div>
 
-      <div v-if="error" class="error-message">
+      <!-- Exibe todos os erros de forma dinâmica -->
+      <div v-if="Object.keys(errors).length > 0" class="error-message">
+        <ul>
+          <li v-for="(messages, field) in errors" :key="field">
+            
+              <span v-for="(message, index) in messages" :key="index">
+                {{ message }}
+              </span>
+            
+          </li>
+        </ul>
+      </div>
+
+      <div v-if="error && Object.keys(errors).length === 0" class="error-message">
         {{ error }}
       </div>
 
@@ -45,7 +58,8 @@ export default {
     return {
       email: '',
       password: '',
-      error: null,
+      error: null,  // Erro genérico
+      errors: {},   // Erros específicos de cada campo
       isLoading: false
     };
   },
@@ -57,41 +71,34 @@ export default {
   methods: {
     async handleLogin() {
       this.error = null;
+      this.errors = {};  // Limpa os erros antes de uma nova tentativa de login
       this.isLoading = true;
 
       try {
-        // console.log('Dados enviados para o backend:', {
-        //   email: this.email,
-        //   password: this.password
-        // });
-
         const response = await axios.post(`${process.env.VUE_APP_API_URL}/api/login`, {
           email: this.email,
           password: this.password
         });
 
-        // console.log('Resposta da API:', response);  // Adicionei o log aqui
-
-        // Verifica se o status da resposta é 200 (sucesso)
         if (response.status === 200 && response.data.access_token) {
           const token = response.data.access_token;
           const user = response.data.user;
 
-          // Atualiza o Vuex com o token e o usuário
           this.$store.dispatch('login', { user, token });
           
-          // Redireciona para a página inicial ou para a rota protegida
           this.$router.push('/dashboard');
         } else {
           throw new Error('Erro de autenticação');
         }
 
       } catch (error) {
-        // console.log('Erro de login:', error);  // Adicionei o log aqui
-
-        // Trata o erro de rede ou resposta inesperada
         if (error.response) {
-          this.error = error.response.data.message || 'Erro desconhecido na resposta';
+          // Verifica se há erros de validação específicos para o campo
+          if (error.response.data.errors) {
+            this.errors = error.response.data.errors;
+          } else {
+            this.error = error.response.data.message || 'Erro desconhecido na resposta';
+          }
         } else {
           this.error = 'Erro de rede';
         }
@@ -100,10 +107,8 @@ export default {
       }
     }
   }
-
 };
 </script>
-
 
 <style scoped>
 .login-container {
@@ -149,5 +154,10 @@ button:disabled {
   color: red;
   font-size: 14px;
   text-align: center;
+}
+
+ul {
+  padding-left: 20px;
+  list-style-type: none;
 }
 </style>
