@@ -1,6 +1,6 @@
-# Projeto de Gestão de Ordens de Viagem
+# Projeto de Pedidos de Viagem
 
-Este projeto é uma aplicação completa para a gestão de ordens de viagem, composta por um backend em Laravel e um frontend em Vue.js, ambos rodando em containers Docker.
+Este projeto é uma aplicação pedidos de viagem, composta por um backend em Laravel e um frontend em Vue.js, ambos rodando em containers Docker.
 
 ## Estrutura do Projeto
 
@@ -21,78 +21,57 @@ Certifique-se de ter os seguintes requisitos instalados antes de iniciar o proje
 
 ## Como Iniciar o Projeto
 
-### 1️⃣ Configurar variáveis de ambiente
+### Configurar variáveis de ambiente
 
 Crie o arquivo `.env` na pasta `backend/` com base no `.env.example`:
 ```sh
 cp pedido-viagem/backend/.env.example pedido-viagem/backend/.env
 ```
-Atualize os valores conforme necessário, especialmente a configuração do banco de dados:
+Atualize os valores conforme necessário, especialmente a configuração de envio de email:
 ```env
-DB_CONNECTION=mysql
-DB_HOST=travel_bd
-DB_PORT=3306
-DB_DATABASE=laravel
-DB_USERNAME=sail
-DB_PASSWORD=password
-```
-Caso esteja utilizando o banco de logs, configure também:
-```env
-DB_LOGS_CONNECTION=mysql
-DB_LOGS_HOST=travel_logs_bd
-DB_LOGS_PORT=3306
-DB_LOGS_DATABASE=logs_activity
-DB_LOGS_USERNAME=sail
-DB_LOGS_PASSWORD=password
+MAIL_MAILER=smtp
+MAIL_HOST=
+MAIL_PORT=
+MAIL_USERNAME=
+MAIL_PASSWORD=
+MAIL_ENCRYPTION=ssl
+MAIL_FROM_NAME="${APP_NAME}"
+MAIL_FROM_ADDRESS=
 ```
 
-### 2️⃣ Subir os containers Docker
+### Subir os containers Docker
 
 Na raiz do projeto, execute:
 ```sh
-docker-compose up -d --build
+docker-compose up --build
 ```
 Isso iniciará os serviços do frontend, backend, banco de dados e fila de processamento.
 
-### 3️⃣ Instalar dependências do Laravel
+### Instalar dependências do Laravel
 
-Acesse o container do backend e instale as dependências:
+Acesse o container do backend:
 ```sh
 docker exec -it travel_laravel bash
-composer install
 ```
 
-### 4️⃣ Rodar as migrações do banco de dados
+### Rodar seed para o banco e dados (caso ainda não possua dados)
 
 Ainda dentro do container do backend:
 ```sh
-php artisan migrate --seed
+php artisan db:seed
 ```
 
-### 5️⃣ Gerar chave da aplicação Laravel
-```sh
-php artisan key:generate
-```
-
-### 6️⃣ Executar os testes do backend
+### Executar os testes do backend
 ```sh
 php artisan test
 ```
 
-### 7️⃣ Iniciar o processamento de filas
-Se estiver utilizando filas no Laravel, inicie o worker:
-```sh
-docker exec -it travel_queue bash
-php artisan queue:work --daemon
-```
-
-### 8️⃣ Acessar a aplicação
+### Acessar a aplicação
 
 Após subir os containers, acesse:
 - **Frontend**: [http://localhost:8080](http://localhost:8080)
 - **Backend (API)**: [http://localhost:8000](http://localhost:8000)
 - **Banco de Dados (MySQL)**: `localhost:3311`
-- **Banco de Logs**: `localhost:3310`
 
 ## Comandos Úteis
 
@@ -113,7 +92,7 @@ docker exec -it travel_laravel bash
 
 ## Documentação da API
 
-O projeto utiliza o [Scribe](https://scribe.knapsackpro.com/) para gerar a documentação da API. Para gerar a documentação, execute:
+O projeto utiliza o [Scribe](https://scribe.knapsackpro.com/) para gerar a documentação da API. Caso alatere algo, para gerar a documentação novamente, execute:
 ```sh
 docker exec -it travel_laravel php artisan scribe:generate
 ```
